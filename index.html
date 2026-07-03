@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MohsinCodes | All-in-One Solver</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #0b0e14; color: #fff; padding: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 20px; }
+        .card { background: #1c222d; padding: 20px; border-radius: 15px; border: 1px solid #333; }
+        input, button { width: 100%; padding: 10px; margin: 5px 0; border-radius: 5px; border: none; }
+        button { background: #00d2ff; cursor: pointer; font-weight: bold; }
+        h1, h2 { color: #00d2ff; text-align: center; }
+    </style>
+</head>
+<body>
+    <h1>MohsinCodes Hub</h1>
+    <div class="grid">
+        <!-- Stock Widget -->
+        <div class="card">
+            <h2>Market Overview</h2>
+            <div class="tradingview-widget-container">
+                <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js" async>
+                {"colorTheme": "dark", "symbols": [{"s": "FX:EURUSD"}, {"s": "FX:GBPUSD"}, {"s": "BITSTAMP:BTCUSD"}]}
+                </script>
+            </div>
+        </div>
+        <!-- Email Validator -->
+        <div class="card">
+            <h2>Email Validator</h2>
+            <input type="email" id="email" placeholder="example@mail.com">
+            <button onclick="checkEmail()">Verify</button>
+            <p id="res-email"></p>
+        </div>
+        <!-- Password Gen -->
+        <div class="card">
+            <h2>Pass Generator</h2>
+            <button onclick="genPass()">Generate 12-Char Pass</button>
+            <p id="res-pass"></p>
+        </div>
+        <!-- Word Counter -->
+        <div class="card">
+            <h2>Word Counter</h2>
+            <input type="text" id="words" placeholder="Type here...">
+            <p id="res-words">Words: 0</p>
+        </div>
+    </div>
+    <script>
+        async function checkEmail() {
+            const email = document.getElementById('email').value;
+            const res = await fetch('/api/verify', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({email}) });
+            const data = await res.json();
+            document.getElementById('res-email').innerText = data.valid ? "✅ Valid" : "❌ Invalid";
+        }
+        function genPass() {
+            document.getElementById('res-pass').innerText = Math.random().toString(36).slice(-12);
+        }
+        document.getElementById('words').addEventListener('input', (e) => {
+            const w = e.target.value.split(' ').filter(x => x.length > 0).length;
+            document.getElementById('res-words').innerText = "Words: " + w;
+        });
+    </script>
+</body>
+</html>
