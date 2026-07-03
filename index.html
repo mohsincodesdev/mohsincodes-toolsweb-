@@ -1,49 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>MohsinCodes | Finance Hub</title>
     <style>
         body { background: #0b0e14; color: #fff; font-family: sans-serif; text-align: center; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; padding: 20px; }
-        .tool-box { background: #1c222d; padding: 20px; border-radius: 10px; border: 1px solid #333; }
-        input { width: 80%; padding: 8px; margin: 5px; }
-        button { background: #00d2ff; border: none; padding: 10px; cursor: pointer; width: 85%; }
+        .menu { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 20px; }
+        button { padding: 10px 15px; background: #333; color: white; border: none; cursor: pointer; border-radius: 5px; }
+        button:hover { background: #00d2ff; }
+        .tool-box { display: none; background: #1c222d; padding: 20px; max-width: 400px; margin: 20px auto; border-radius: 10px; }
+        .active { display: block; }
     </style>
 </head>
 <body>
-    <h1>Finance Utility Tools</h1>
-    <div class="grid" id="financeTools"></div>
+    <h1>MohsinCodes Utility Hub</h1>
+    
+    <!-- Menu Bar -->
+    <div class="menu" id="menuBar"></div>
+
+    <!-- Content Area -->
+    <div id="contentArea"></div>
 
     <script>
-        const financeTools = [
-            { id: 'emi', name: 'EMI Calculator', inputs: ['Principal', 'Rate', 'Years'], formula: (p,r,n) => (p * (r/1200) * Math.pow(1 + r/1200, n*12)) / (Math.pow(1 + r/1200, n*12) - 1) },
-            { id: 'simpleInt', name: 'Simple Interest', inputs: ['Principal', 'Rate', 'Years'], formula: (p,r,t) => (p * r * t) / 100 },
+        const tools = [
+            { id: 'emi', name: 'EMI Calc', inputs: ['Principal', 'Rate', 'Years'], formula: (p,r,n) => (p * (r/1200) * Math.pow(1 + r/1200, n*12)) / (Math.pow(1 + r/1200, n*12) - 1) },
             { id: 'discount', name: 'Discount Calc', inputs: ['Price', 'Discount%'], formula: (p,d) => p - (p * d / 100) },
-            { id: 'gst', name: 'GST Calculator', inputs: ['Amount', 'GST%'], formula: (a,g) => a * (g / 100) },
-            { id: 'margin', name: 'Margin Calc', inputs: ['Cost', 'Revenue'], formula: (c,r) => ((r - c) / r) * 100 },
-            { id: 'profit', name: 'Profit Calc', inputs: ['Cost', 'SalePrice'], formula: (c,s) => s - c },
-            { id: 'tax', name: 'Tax Calculator', inputs: ['Income', 'Tax%'], formula: (i,t) => i * (t / 100) },
-            { id: 'savings', name: 'Savings Goal', inputs: ['Target', 'Current'], formula: (t,c) => t - c },
-            { id: 'tip', name: 'Tip Calculator', inputs: ['Bill', 'Tip%'], formula: (b,t) => b * (t / 100) },
-            { id: 'roi', name: 'ROI Calculator', inputs: ['Gain', 'Cost'], formula: (g,c) => ((g - c) / c) * 100 }
+            { id: 'word', name: 'Word Counter', inputs: ['Text'], formula: (t) => t.split(' ').filter(x=>x).length }
         ];
 
-        const container = document.getElementById('financeTools');
-        financeTools.forEach(t => {
-            container.innerHTML += `
-                <div class="tool-box">
-                    <h3>${t.name}</h3>
-                    ${t.inputs.map(i => `<input type="number" id="${t.id}${i}" placeholder="${i}">`).join('')}
-                    <button onclick="calc('${t.id}')">Calculate</button>
-                    <p id="${t.id}Res"></p>
-                </div>`;
-        });
+        function init() {
+            const menuBar = document.getElementById('menuBar');
+            const contentArea = document.getElementById('contentArea');
+
+            tools.forEach(t => {
+                // Create Button
+                menuBar.innerHTML += `<button onclick="show('${t.id}')">${t.name}</button>`;
+                
+                // Create Tool Box
+                contentArea.innerHTML += `
+                    <div id="${t.id}Box" class="tool-box">
+                        <h3>${t.name}</h3>
+                        ${t.inputs.map(i => `<input type="number" id="${t.id}${i}" placeholder="${i}"><br>`).join('')}
+                        <button onclick="calc('${t.id}')">Calculate</button>
+                        <p id="${t.id}Res"></p>
+                    </div>`;
+            });
+        }
+
+        function show(id) {
+            document.querySelectorAll('.tool-box').forEach(t => t.style.display = 'none');
+            document.getElementById(id + 'Box').style.display = 'block';
+        }
 
         function calc(id) {
-            const tool = financeTools.find(t => t.id === id);
+            const tool = tools.find(t => t.id === id);
             const vals = tool.inputs.map(i => parseFloat(document.getElementById(id + i).value));
             document.getElementById(id + 'Res').innerText = "Result: " + tool.formula(...vals).toFixed(2);
         }
+
+        init();
     </script>
 </body>
 </html>
