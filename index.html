@@ -78,16 +78,34 @@
             { id: 'randomHex', name: 'Random Hex', inputs: ['Click'], formula: () => '#'+Math.floor(Math.random()*16777215).toString(16) },
             { id: 'repeat', name: 'Repeat Text', inputs: ['Text', 'Times'], formula: (t,n) => t.repeat(n) },
             { id: 'ascii', name: 'Char to ASCII', inputs: ['Char'], formula: (c) => c.charCodeAt(0) }
-        
-        ];
+                ];
+        const games = [
+    { id: 'g1', name: 'Guess Num', html: `<input id="gn" type="number"><button class="game-btn" onclick="checkG()">Check</button><p id="gr"></p>`, logic: () => { const r = Math.floor(Math.random()*10)+1; const v = document.getElementById('gn').value; document.getElementById('gr').innerText = (v==r) ? "Win! ✅" : "Lose, it was "+r; } },
+    { id: 'g2', name: 'Coin Flip', html: `<button class="game-btn" onclick="flip()">Flip Coin</button><p id="fr"></p>`, logic: () => document.getElementById('fr').innerText = Math.random()>0.5 ? "Heads" : "Tails" },
+    { id: 'g3', name: 'Dice Roll', html: `<button class="game-btn" onclick="roll()">Roll Dice</button><p id="dr"></p>`, logic: () => document.getElementById('dr').innerText = "Result: " + (Math.floor(Math.random()*6)+1) },
+    { id: 'g4', name: 'Rock Paper', html: `<button class="game-btn" onclick="rps('Rock')">Rock</button><button class="game-btn" onclick="rps('Paper')">Paper</button><p id="rr"></p>`, logic: (u) => { const c = ['Rock','Paper','Scissors'][Math.floor(Math.random()*3)]; document.getElementById('rr').innerText = "Comp: "+c; } },
+    { id: 'g5', name: 'Magic 8Ball', html: `<button class="game-btn" onclick="ask()">Ask Ball</button><p id="br"></p>`, logic: () => { const a = ['Yes','No','Maybe','Ask Later']; document.getElementById('br').innerText = a[Math.floor(Math.random()*a.length)]; } },
+    { id: 'g6', name: 'Color Click', html: `<div id="cbox" style="height:50px; background:red" onclick="change()">Click me</div>`, logic: () => document.getElementById('cbox').style.background = '#'+Math.floor(Math.random()*16777215).toString(16) },
+    { id: 'g7', name: 'Typing Test', html: `<input oninput="test(this.value)" placeholder="Type 'Hello'">`, logic: (v) => { if(v=='Hello') alert('Fast!'); } },
+    { id: 'g8', name: 'Timer Game', html: `<button class="game-btn" onclick="startT()">Start 5s</button><p id="tr"></p>`, logic: () => { setTimeout(()=>alert('Done!'), 5000); } },
+    { id: 'g9', name: 'Random Char', html: `<button class="game-btn" onclick="showC()">Get Char</button><p id="cr"></p>`, logic: () => document.getElementById('cr').innerText = String.fromCharCode(65 + Math.floor(Math.random()*26)) },
+    { id: 'g10', name: 'Tap Speed', html: `<button class="game-btn" onclick="tap()">Tap Me</button><p id="sr"></p>`, logic: () => { let c=0; c++; document.getElementById('sr').innerText = "Taps: "+c; } }
 
-        function init() {
+        ]; 
+        // Global logic for games (Simplified for this version)
+        function checkG() { const r=Math.floor(Math.random()*10)+1; const v=document.getElementById('gn').value; document.getElementById('gr').innerText = (v==r) ? "Win! ✅" : "Lose, was "+r; }
+        function flip() { document.getElementById('fr').innerText = Math.random()>0.5 ? "Heads" : "Tails"; }
+        function roll() { document.getElementById('dr').innerText = "Result: " + (Math.floor(Math.random()*6)+1); }
+        function ask() { const a=['Yes','No','Maybe','Ask Later']; document.getElementById('br').innerText = a[Math.floor(Math.random()*a.length)]; }
+        let taps=0; function tap() { taps++; document.getElementById('sr').innerText = "Taps: "+taps; }
+function init() {
             const menuBar = document.getElementById('menuBar');
             const contentArea = document.getElementById('contentArea');
+
+            // 1. Render Tools
             tools.forEach(t => {
                 menuBar.innerHTML += `<button onclick="show('${t.id}')">${t.name}</button>`;
-                // Textarea handled for word count specifically
-                const inputsHtml = t.inputs.map(i => i === 'Text' ? `<textarea id="${t.id}${i}" placeholder="${i}"></textarea>` : `<input type="number" id="${t.id}${i}" placeholder="${i}">`).join('');
+                const inputsHtml = t.inputs.map(i => i === 'Text' || i === 'JSON' || i === 'Code' || i === 'URL' ? `<textarea id="${t.id}${i}" placeholder="${i}"></textarea>` : `<input type="number" id="${t.id}${i}" placeholder="${i}">`).join('');
                 
                 contentArea.innerHTML += `
                     <div id="${t.id}Box" class="tool-box">
@@ -97,11 +115,27 @@
                         <p id="${t.id}Res" style="margin-top:15px; color:#00d2ff;"></p>
                     </div>`;
             });
+
+            // 2. Render Games (TOOLS LOOP KE BAAR)
+            games.forEach(g => {
+                menuBar.innerHTML += `<button onclick="showGame('${g.id}')">${g.name}</button>`;
+                contentArea.innerHTML += `
+                    <div id="${g.id}Box" class="game-box">
+                        <h3>${g.name}</h3>
+                        ${g.html}
+                    </div>`;
+            });
         }
 
+        // Common Show Function for both
         function show(id) {
-            document.querySelectorAll('.tool-box').forEach(t => t.style.display = 'none');
+            document.querySelectorAll('.tool-box, .game-box').forEach(el => el.style.display = 'none');
             document.getElementById(id + 'Box').style.display = 'block';
+        }
+
+        // Games ko bhi show karne ke liye same function use karein
+        function showGame(id) {
+            show(id);
         }
 
         function calc(id) {
@@ -109,7 +143,6 @@
             const vals = tool.inputs.map(i => document.getElementById(id + i).value);
             document.getElementById(id + 'Res').innerText = "Result: " + tool.formula(...vals);
         }
-
         init();
     </script>
 </body>
