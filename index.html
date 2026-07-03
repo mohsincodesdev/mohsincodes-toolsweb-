@@ -18,7 +18,6 @@
     <div id="contentArea"></div>
 
     <script>
-        // Yahan aapko tools add karne hain (Bas yahan copy-paste karein)
         const tools = [
             { id: 'emi', name: 'EMI Calc', inputs: ['Principal', 'Rate', 'Years'], formula: (p,r,n) => (p*(r/1200)*Math.pow(1+r/1200, n*12))/(Math.pow(1+r/1200, n*12)-1) },
             { id: 'simpleInt', name: 'Simple Interest', inputs: ['Principal', 'Rate', 'Years'], formula: (p,r,t) => (p * r * t) / 100 },
@@ -29,7 +28,7 @@
             { id: 'tax', name: 'Tax Calculator', inputs: ['Income', 'Tax%'], formula: (i,t) => i * (t / 100) },
             { id: 'savings', name: 'Savings Goal', inputs: ['Target', 'Current'], formula: (t,c) => t - c },
             { id: 'tip', name: 'Tip Calculator', inputs: ['Bill', 'Tip%'], formula: (b,t) => b * (t / 100) },
-            { id: 'roi', name: 'ROI Calculator', inputs: ['Gain', 'Cost'], formula: (g,c) => ((g - c) / c) * 100 }
+            { id: 'roi', name: 'ROI Calculator', inputs: ['Gain', 'Cost'], formula: (g,c) => ((g - c) / c) * 100 },
             { id: 'word', name: 'Word Count', inputs: ['Text'], formula: (t) => t.split(' ').filter(x=>x).length }
         ];
 
@@ -38,10 +37,13 @@
             const contentArea = document.getElementById('contentArea');
             tools.forEach(t => {
                 menuBar.innerHTML += `<button onclick="show('${t.id}')">${t.name}</button>`;
+                // Textarea handled for word count specifically
+                const inputsHtml = t.inputs.map(i => i === 'Text' ? `<textarea id="${t.id}${i}" placeholder="${i}"></textarea>` : `<input type="number" id="${t.id}${i}" placeholder="${i}">`).join('');
+                
                 contentArea.innerHTML += `
                     <div id="${t.id}Box" class="tool-box">
                         <h3>${t.name}</h3>
-                        ${t.inputs.map(i => `<input id="${t.id}${i}" placeholder="${i}">`).join('')}
+                        ${inputsHtml}
                         <button onclick="calc('${t.id}')">Calculate / Run</button>
                         <p id="${t.id}Res" style="margin-top:15px; color:#00d2ff;"></p>
                     </div>`;
