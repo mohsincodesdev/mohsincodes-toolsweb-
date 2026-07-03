@@ -2,6 +2,6 @@
   "name": "mohsincodes-hub",
   "version": "1.0.0",
   "dependencies": {
-    "deep-email-validator": "0.1.21"
+    "validator": "13.11.0"
   }
 }
